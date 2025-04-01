@@ -42,9 +42,9 @@
           width="0.9" 
           height="1.6" 
           class="clickable"
-          position="0 0.1 2" 
+          position="0 0.1 1" 
           rotation="-90 0 0"
-          
+          gesture-handler
         ></a-video>
                 </a-entity>
             </a-marker>
@@ -54,6 +54,8 @@
             <video id="sample-video" autoplay loop muted>
                 <source src="assets/sample.mp4" type="video/mp4">
             </video>
+            <button onclick="document.getElementById('sample-video').play()">Play Video</button>
+
         </a-scene>
     </body>
 </html>
