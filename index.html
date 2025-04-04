@@ -24,6 +24,8 @@
                 <a-entity id="linked-object1" scale="1 1 1" position="0 0 0">
                     <a-image
                         src="assets/asset.png"
+                        width="1"
+                        height="1"
                         rotation="-90 0 0"
                         custom-gesture="id: linked-object1"
                     ></a-image>
@@ -96,5 +98,22 @@
                 }
             }
         });
+
+window.addEventListener('resize', () => {
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const image = document.querySelector('a-image');
+    const video = document.querySelector('a-video');
+    
+    if (aspectRatio > 1) {
+        // Landscape Mode
+        image.setAttribute('scale', { x: 1, y: 1, z: 1 });
+        video.setAttribute('scale', { x: 1.5, y: 0.8, z: 1 });
+    } else {
+        // Portrait Mode
+        image.setAttribute('scale', { x: 0.7, y: 1, z: 1 });
+        video.setAttribute('scale', { x: 1, y: 1.5, z: 1 });
+    }
+});
+
     </script>
 </html>
