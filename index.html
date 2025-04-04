@@ -5,7 +5,6 @@
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
@@ -13,62 +12,59 @@
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
             arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-            id="scene"
-            embedded
             gesture-detector
         >
+            <!-- Marker 1 -->
             <a-marker
-                id="animated-marker"
+                id="marker1"
                 type="pattern"
-                preset="custom"
                 url="assets/marker1.patt"
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-                scale="2 2 2" <!-- Adjust scale of the marker -->
+                scale="2 2 2"
             >
+                <a-entity scale="1 1 1" position="0 0.1 0">
+                    <a-image
+                        src="assets/image1.png"
+                        class="clickable"
+                        rotation="-90 0 0"
+                        gesture-handler
+                    ></a-image>
+                </a-entity>
+            </a-marker>
+
+            <!-- Marker 2 -->
             <a-marker
-                id="animated-marker"
+                id="marker2"
                 type="pattern"
-                preset="custom"
                 url="assets/marker2.patt"
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-                scale="2 2 2" <!-- Adjust scale of the marker -->
+                scale="2 2 2"
             >
-                 <a-entity scale="1 1 1">
-                <a-image
-                    src="assets/asset.png"
-                    class="clickable"
-                    rotation="-90 0 0"
-                    gesture-handler
-                ></a-image>
-            </a-entity>
-         <a-entity scale="1 1 1">
-        <a-video 
-          src="#sample-video" 
-          width="0.9" 
-          height="1.6" 
-          class="clickable"
-          position="0 0.1 1" 
-          rotation="-90 0 0"
-          gesture-handler
-        ></a-video>
+                <a-entity scale="1 1 1" position="0 0.1 0">
+                    <a-video 
+                        src="#sample-video"
+                        width="1" 
+                        height="1.5"
+                        class="clickable"
+                        rotation="-90 0 0"
+                        gesture-handler
+                    ></a-video>
                 </a-entity>
             </a-marker>
 
             <a-entity camera></a-entity>
         </a-scene>
 
-           <!-- Video Element -->
-            <video id="sample-video" autoplay loop>
-                <source src="assets/sample.mp4" type="video/mp4">
-            </video>
-           <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
+        <!-- Video Element -->
+        <video id="sample-video" autoplay loop>
+            <source src="assets/sample.mp4" type="video/mp4">
+        </video>
 
-        
+        <!-- Play Button -->
+        <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
     </body>
 </html>
