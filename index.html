@@ -31,6 +31,8 @@
                 scale-relative-to-marker
                 align-to-marker-tilt
                 align-position-dynamically
+                stable-position
+                lock-flat-to-marker
             >
                 <a-entity id="linked-object1" scale="2 2 2" position="0 0 0">
                     <a-image
@@ -54,6 +56,8 @@
                 scale-relative-to-marker
                 align-to-marker-tilt
                 align-position-dynamically
+                stable-position
+                lock-flat-to-marker
             >
                 <a-entity id="linked-object2" scale="2 2 2" position="0 0 0">
                     <a-video
@@ -167,5 +171,37 @@
                 });
             }
         });
+
+AFRAME.registerComponent('lock-flat-to-marker', {
+    tick: function () {
+        const marker = this.el;
+        if (marker.object3D.visible) {
+            const linkedObject = marker.querySelector('a-entity');
+            linkedObject.setAttribute('rotation', { x: -90, y: 0, z: 0 }); // Flat on screen
+        }
+    }
+});
+
+AFRAME.registerComponent('stable-position', {
+    schema: { type: 'vec3', default: { x: 0, y: 0, z: 0 } },
+    tick: function () {
+        const marker = this.el;
+        const object = marker.querySelector('a-entity');
+        if (marker.object3D.visible) {
+            const currentPosition = marker.object3D.position;
+            const lastPosition = this.data;
+            if (
+                Math.abs(currentPosition.x - lastPosition.x) > 0.01 ||
+                Math.abs(currentPosition.y - lastPosition.y) > 0.01 ||
+                Math.abs(currentPosition.z - lastPosition.z) > 0.01
+            ) {
+                // Only update position if significant movement is detected
+                object.setAttribute('position', currentPosition);
+                this.data = currentPosition;
+            }
+        }
+    }
+});
+
     </script>
 </html>
