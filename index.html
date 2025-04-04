@@ -69,4 +69,63 @@
         <!-- Play Button -->
         <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
     </body>
+<script>
+document.querySelector('#marker1').addEventListener('markerFound', (event) => {
+    console.log('Marker 1 detected!');
+    // Relocate or adjust objects here
+});
+document.querySelector('#marker2').addEventListener('markerFound', () => {
+    console.log('Marker 2 detected!');
+    // Adjust position for objects tied to Marker 2
+});
+
+
+AFRAME.registerComponent('relocate-object', {
+    tick: function () {
+        let marker = this.el; // Get the marker entity
+        if (marker.object3D.visible) {
+            // Access marker's position
+            let markerPosition = marker.object3D.position;
+            console.log('Marker Position:', markerPosition);
+
+            // Dynamically relocate object tied to this marker
+            let linkedObject = document.querySelector('#linked-object');
+            linkedObject.setAttribute('position', {
+                x: markerPosition.x,
+                y: markerPosition.y + 0.5, // Offset above marker
+                z: markerPosition.z
+            });
+        }
+    }
+});
+
+let marker2 = document.querySelector('#marker2');
+let markerPosition2 = marker2.object3D.position;
+
+// Example: Relocate object tied to marker 2
+let object2 = document.querySelector('#linked-object2');
+object2.setAttribute('position', {
+    x: markerPosition2.x + 0.5, // Adjust offset
+    y: markerPosition2.y,
+    z: markerPosition2.z
+});
+
+AFRAME.registerComponent('relocate-marker2-object', {
+    tick: function () {
+        let marker = this.el; // Marker 2 entity
+        if (marker.object3D.visible) {
+            let linkedObject = document.querySelector('#linked-object2');
+            let markerPosition = marker.object3D.position;
+
+            // Dynamically relocate object based on Marker 2's position
+            linkedObject.setAttribute('position', {
+                x: markerPosition.x,
+                y: markerPosition.y + 0.5,
+                z: markerPosition.z
+            });
+        }
+    }
+});
+
+</script>
 </html>
