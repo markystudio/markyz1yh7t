@@ -26,7 +26,7 @@
                     <a-image
                         src="assets/asset.png"
                         rotation="-90 0 0"
-                        gesture-handler
+                        custom-gesture1
                     ></a-image>
                 </a-entity>
             </a-marker>
@@ -49,7 +49,7 @@
                         class="clickable"
                         position="0 0 0"
                         rotation="-90 0 0"
-                        gesture-handler
+                        custom-gesture2
                     ></a-video>
                 </a-entity>
             </a-marker>
@@ -121,6 +121,33 @@ AFRAME.registerComponent('relocate-marker2-object', {
             });
         }
     }
+});
+
+
+AFRAME.registerComponent('custom-gesture1', {
+  init: function () {
+    this.el.addEventListener('scale', (event) => {
+      const scale = event.detail.scale; // Get scale factor
+      this.el.setAttribute('scale', {
+        x: scale,
+        y: scale,
+        z: scale
+      });
+    });
+  }
+});
+
+AFRAME.registerComponent('custom-gesture2', {
+  init: function () {
+    this.el.addEventListener('scale', (event) => {
+      const scale = event.detail.scale; // Get scale factor
+      this.el.setAttribute('scale', {
+        x: scale * 1.5, // Example independent scaling factor
+        y: scale * 1.5,
+        z: scale * 1.5
+      });
+    });
+  }
 });
 
 </script>
