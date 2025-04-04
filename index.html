@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+        <!-- Include Required Libraries -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
@@ -8,6 +9,7 @@
     </head>
 
     <body style="margin: 0; overflow: hidden;">
+        <!-- A-Frame Scene -->
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
@@ -19,15 +21,16 @@
                 id="marker1"
                 type="pattern"
                 url="assets/marker1.patt"
+                raycaster="objects: .clickable"
                 emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                scale="2 2 2"
             >
-                <a-entity id="linked-object1" scale="1 1 1" position="0 0 0">
+                <a-entity id="linked-object1" scale="1.5 1.5 1" position="0 0 0">
                     <a-image
                         src="assets/asset.png"
-                        width="1"
-                        height="1"
                         rotation="-90 0 0"
-                        custom-gesture="id: linked-object1"
+                        custom-gesture1
                     ></a-image>
                 </a-entity>
             </a-marker>
@@ -37,19 +40,25 @@
                 id="marker2"
                 type="pattern"
                 url="assets/marker2.patt"
+                raycaster="objects: .clickable"
                 emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                scale="2 2 2"
             >
-                <a-entity id="linked-object2" scale="1 1 1" position="0 0 0">
-                    <a-video 
+                <a-entity id="linked-object2" scale="1.5 1 1" position="0 0 0">
+                    <a-video
                         src="#sample-video"
-                        width="1.08" 
+                        width="1.08"
                         height="1.62"
+                        class="clickable"
+                        position="0 0 0"
                         rotation="-90 0 0"
-                        custom-gesture="id: linked-object2"
+                        custom-gesture2
                     ></a-video>
                 </a-entity>
             </a-marker>
 
+            <!-- Camera -->
             <a-entity camera></a-entity>
         </a-scene>
 
@@ -57,21 +66,67 @@
         <video id="sample-video" autoplay loop>
             <source src="assets/sample.mp4" type="video/mp4">
         </video>
-    <!-- Play Button --> 
-    <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
+
+        <!-- Play Button -->
+        <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
     </body>
 
     <script>
-        // Independent gesture scaling
-        AFRAME.registerComponent('custom-gesture', {
-            schema: {
-                id: { type: 'string' } // ID of the object to scale
-            },
+        // Marker 1: Detect events
+        document.querySelector('#marker1').addEventListener('markerFound', () => {
+            console.log('Marker 1 detected!');
+            // Relocate or adjust objects tied to Marker 1
+        });
+
+        // Marker 2: Detect events
+        document.querySelector('#marker2').addEventListener('markerFound', () => {
+            console.log('Marker 2 detected!');
+            // Relocate or adjust objects tied to Marker 2
+        });
+
+        // Relocate objects dynamically based on Marker 1
+        AFRAME.registerComponent('relocate-object', {
+            tick: function () {
+                const marker = this.el; // Marker entity
+                if (marker.object3D.visible) {
+                    const markerPosition = marker.object3D.position;
+                    console.log('Marker Position:', markerPosition);
+
+                    // Dynamically relocate object tied to Marker 1
+                    const linkedObject = document.querySelector('#linked-object1');
+                    linkedObject.setAttribute('position', {
+                        x: markerPosition.x,
+                        y: markerPosition.y + 0.5, // Offset above marker
+                        z: markerPosition.z
+                    });
+                }
+            }
+        });
+
+        // Relocate objects dynamically based on Marker 2
+        AFRAME.registerComponent('relocate-marker2-object', {
+            tick: function () {
+                const marker = this.el; // Marker 2 entity
+                if (marker.object3D.visible) {
+                    const markerPosition = marker.object3D.position;
+
+                    // Dynamically relocate object tied to Marker 2
+                    const linkedObject = document.querySelector('#linked-object2');
+                    linkedObject.setAttribute('position', {
+                        x: markerPosition.x,
+                        y: markerPosition.y + 0.5, // Offset above marker
+                        z: markerPosition.z
+                    });
+                }
+            }
+        });
+
+        // Gesture Handling for Marker 1
+        AFRAME.registerComponent('custom-gesture1', {
             init: function () {
-                const object = document.querySelector(`#${this.data.id}`);
                 this.el.addEventListener('gesturechange', (event) => {
-                    const scale = event.detail.scale || 1; // Default scale = 1 if undefined
-                    object.setAttribute('scale', {
+                    const scale = event.detail.scale || 1; // Get scale factor
+                    this.el.setAttribute('scale', {
                         x: scale,
                         y: scale,
                         z: scale
@@ -80,26 +135,18 @@
             }
         });
 
-        // Relocate objects dynamically
-        AFRAME.registerComponent('relocate-object', {
-            tick: function () {
-                const marker = this.el; // Marker entity
-                if (marker.object3D.visible) {
-                    const markerPosition = marker.object3D.position;
-
-                    // Dynamically relocate object based on marker's position
-                    const linkedObjectId = this.el.id === 'marker1' ? 'linked-object1' : 'linked-object2';
-                    const linkedObject = document.querySelector(`#${linkedObjectId}`);
-                    linkedObject.setAttribute('position', {
-                        x: markerPosition.x,
-                        y: markerPosition.y + 0.5, // Example offset above the marker
-                        z: markerPosition.z
+        // Gesture Handling for Marker 2
+        AFRAME.registerComponent('custom-gesture2', {
+            init: function () {
+                this.el.addEventListener('gesturechange', (event) => {
+                    const scale = event.detail.scale || 1; // Get scale factor
+                    this.el.setAttribute('scale', {
+                        x: scale * 1.5, // Example independent scaling factor
+                        y: scale * 1.5,
+                        z: scale * 1.5
                     });
-                }
+                });
             }
         });
-
-
-
     </script>
 </html>
