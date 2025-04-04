@@ -25,6 +25,9 @@
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
                 scale="2 2 2"
+                scale-relative-to-marker
+                align-to-marker-tilt
+                align-position-dynamically
             >
                 <a-entity id="linked-object1" scale="2 1.5 1" position="0 0 0">
                     <a-image
@@ -44,6 +47,9 @@
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
                 scale="2 2 2"
+                scale-relative-to-marker
+                align-to-marker-tilt
+                align-position-dynamically
             >
                 <a-entity id="linked-object2" scale="2.7 2 2" position="0 0 0">
                     <a-video
@@ -72,49 +78,58 @@
     </body>
 
     <script>
-        // Marker 1: Detect events
+        // Marker 1 Events
         document.querySelector('#marker1').addEventListener('markerFound', () => {
             console.log('Marker 1 detected!');
-            // Relocate or adjust objects tied to Marker 1
         });
 
-        // Marker 2: Detect events
+        // Marker 2 Events
         document.querySelector('#marker2').addEventListener('markerFound', () => {
             console.log('Marker 2 detected!');
-            // Relocate or adjust objects tied to Marker 2
         });
 
-        // Relocate objects dynamically based on Marker 1
-        AFRAME.registerComponent('relocate-object', {
+        // Component: Maintain size relative to marker
+        AFRAME.registerComponent('scale-relative-to-marker', {
             tick: function () {
-                const marker = this.el; // Marker entity
+                const marker = this.el;
                 if (marker.object3D.visible) {
-                    const markerPosition = marker.object3D.position;
-                    console.log('Marker Position:', markerPosition);
-
-                    // Dynamically relocate object tied to Marker 1
-                    const linkedObject = document.querySelector('#linked-object1');
-                    linkedObject.setAttribute('position', {
-                        x: markerPosition.x,
-                        y: markerPosition.y + 0.5, // Offset above marker
-                        z: markerPosition.z
+                    const linkedObject = marker.querySelector('a-entity');
+                    const markerScale = marker.object3D.scale; // Maintain relative size
+                    linkedObject.setAttribute('scale', {
+                        x: markerScale.x * 2,
+                        y: markerScale.y * 2,
+                        z: markerScale.z * 2
                     });
                 }
             }
         });
 
-        // Relocate objects dynamically based on Marker 2
-        AFRAME.registerComponent('relocate-marker2-object', {
+        // Component: Align orientation with marker tilt
+        AFRAME.registerComponent('align-to-marker-tilt', {
             tick: function () {
-                const marker = this.el; // Marker 2 entity
+                const marker = this.el;
+                if (marker.object3D.visible) {
+                    const linkedObject = marker.querySelector('a-entity');
+                    const markerRotation = marker.object3D.rotation;
+                    linkedObject.setAttribute('rotation', {
+                        x: THREE.Math.radToDeg(markerRotation.x),
+                        y: THREE.Math.radToDeg(markerRotation.y),
+                        z: THREE.Math.radToDeg(markerRotation.z)
+                    });
+                }
+            }
+        });
+
+        // Component: Align position relative to marker
+        AFRAME.registerComponent('align-position-dynamically', {
+            tick: function () {
+                const marker = this.el;
                 if (marker.object3D.visible) {
                     const markerPosition = marker.object3D.position;
-
-                    // Dynamically relocate object tied to Marker 2
-                    const linkedObject = document.querySelector('#linked-object2');
+                    const linkedObject = marker.querySelector('a-entity');
                     linkedObject.setAttribute('position', {
                         x: markerPosition.x,
-                        y: markerPosition.y + 0.5, // Offset above marker
+                        y: markerPosition.y + 0.5, // Adjustable offset
                         z: markerPosition.z
                     });
                 }
@@ -125,7 +140,7 @@
         AFRAME.registerComponent('custom-gesture1', {
             init: function () {
                 this.el.addEventListener('gesturechange', (event) => {
-                    const scale = event.detail.scale || 1; // Get scale factor
+                    const scale = event.detail.scale || 1;
                     this.el.setAttribute('scale', {
                         x: scale,
                         y: scale,
@@ -139,9 +154,9 @@
         AFRAME.registerComponent('custom-gesture2', {
             init: function () {
                 this.el.addEventListener('gesturechange', (event) => {
-                    const scale = event.detail.scale || 1; // Get scale factor
+                    const scale = event.detail.scale || 1;
                     this.el.setAttribute('scale', {
-                        x: scale * 1.5, // Example independent scaling factor
+                        x: scale * 1.5,
                         y: scale * 1.5,
                         z: scale * 1.5
                     });
