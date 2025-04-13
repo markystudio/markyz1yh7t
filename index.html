@@ -82,7 +82,23 @@
         </video>
 
         <!-- Play Button -->
-        <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
+        <button 
+            id="play-btn" 
+            style="
+                position: absolute; 
+                top: 50%; 
+                left: 50%; 
+                transform: translate(-50%, -50%);
+                padding: 10px 20px; 
+                font-size: 16px; 
+                background-color: #4CAF50; 
+                color: white; 
+                border: none; 
+                border-radius: 5px; 
+                cursor: pointer;"
+            onclick="document.getElementById('sample-video').play()">
+            Play Video
+        </button>
     </body>
 
     <script>
